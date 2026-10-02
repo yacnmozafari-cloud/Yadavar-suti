@@ -1,3 +1,4 @@
+# ساخت خودکار فایل APK روی سرورهای GitHub — یادآور صوتی شمسی (طراحی: یاسین مظفری)
 name: Build APK
 
 on:
@@ -13,11 +14,13 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.9"
+          gradle-version: '8.9'
 
       - name: Unzip project
         run: unzip -q YadavarSouti-Android.zip -d project
@@ -26,12 +29,7 @@ jobs:
         run: |
           SETTINGS=$(find project -maxdepth 3 \( -name settings.gradle -o -name settings.gradle.kts \) | head -n1)
           cd "$(dirname "$SETTINGS")"
-          if [ -f gradle/wrapper/gradle-wrapper.jar ]; then
-            chmod +x gradlew
-            ./gradlew assembleDebug
-          else
-            gradle assembleDebug
-          fi
+          gradle assembleDebug --no-daemon --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
